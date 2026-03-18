@@ -1,32 +1,28 @@
-name: Build and push to GHCR
+name: Deploy to ktn
 
 on:
   push:
     branches: [main]
 
-env:
-  IMAGE: ghcr.io/shawnsquire/sprouty-birth-chat
-
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
+  deploy:
+    runs-on: [self-hosted, ktn]
     steps:
-      - uses: actions/checkout@v4
+      - name: Write secrets to .env
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          cd /opt/services/sprouty-birth-chat
+          echo "TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}" > .env
+          echo "SERPER_API_KEY=${SERPER_API_KEY}" >> .env
+          echo "ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}" >> .env
+          chmod 600 .env
 
-      - uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ env.IMAGE }}:latest
-            ${{ env.IMAGE }}:${{ github.sha }}
+      - name: Deploy
+        run: |
+          cd /opt/services/sprouty-birth-chat
+          git pull origin main
+          docker compose build
+          docker compose up -d
