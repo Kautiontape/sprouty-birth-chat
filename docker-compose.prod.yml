@@ -1,0 +1,28 @@
+services:
+  app:
+    image: ghcr.io/shawnsquire/birth-chat:latest
+    container_name: birth_chat_bot
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      SERPER_API_KEY: ${SERPER_API_KEY}
+    volumes:
+      - birth_chat_data:/usr/src/app/data
+    restart: always
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: birth_chat_watchtower
+    environment:
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_POLL_INTERVAL: "60"
+      WATCHTOWER_SCOPE: "birth-chat"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/shawn/.docker/config.json:/config.json:ro
+    command: birth_chat_bot
+    restart: always
+
+volumes:
+  birth_chat_data:
+    external: true

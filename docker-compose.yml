@@ -1,0 +1,17 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: birth_chat_bot
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      SERPER_API_KEY: ${SERPER_API_KEY}
+    volumes:
+      - birth_chat_data:/usr/src/app/data
+    restart: always
+
+volumes:
+  birth_chat_data:
+    external: true
