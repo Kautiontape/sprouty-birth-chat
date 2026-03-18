@@ -1,9 +1,9 @@
 import logging
 import os
 
-from telegram import Update
+from telegram import BotCommand, Update
 from telegram.constants import ChatAction, ParseMode
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
+from telegram.ext import Application, ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 
 from bot.chat import respond
 from bot.storage import (
@@ -143,9 +143,18 @@ async def cmd_help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     )
 
 
+async def post_init(application: Application) -> None:
+    await application.bot.set_my_commands([
+        BotCommand("memory", "View all saved memories"),
+        BotCommand("docs", "View uploaded documents"),
+        BotCommand("link", "Link with your partner"),
+        BotCommand("help", "Show available commands"),
+    ])
+
+
 def main() -> None:
     token = os.environ["TELEGRAM_BOT_TOKEN"]
-    app = ApplicationBuilder().token(token).build()
+    app = ApplicationBuilder().token(token).post_init(post_init).build()
 
     app.add_handler(CommandHandler("memory", cmd_memory))
     app.add_handler(CommandHandler("docs", cmd_docs))
