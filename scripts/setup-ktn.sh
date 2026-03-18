@@ -4,7 +4,7 @@
 set -euo pipefail
 
 APP_DIR="$HOME/apps/birth-chat"
-GHCR_IMAGE="ghcr.io/shawnsquire/birth-chat"
+GHCR_IMAGE="ghcr.io/shawnsquire/sprouty-birth-chat"
 
 echo "==> Creating app directory"
 mkdir -p "$APP_DIR"
@@ -22,7 +22,7 @@ echo "==> Writing docker-compose.prod.yml"
 cat > "$APP_DIR/docker-compose.yml" << 'COMPOSE'
 services:
   app:
-    image: ghcr.io/shawnsquire/birth-chat:latest
+    image: ghcr.io/shawnsquire/sprouty-birth-chat:latest
     container_name: birth_chat_bot
     environment:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}

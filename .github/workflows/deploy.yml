@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 env:
-  IMAGE: ghcr.io/shawnsquire/birth-chat
+  IMAGE: ghcr.io/shawnsquire/sprouty-birth-chat
 
 jobs:
   build:

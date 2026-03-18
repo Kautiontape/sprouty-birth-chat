@@ -1,6 +1,6 @@
 services:
   app:
-    image: ghcr.io/shawnsquire/birth-chat:latest
+    image: ghcr.io/shawnsquire/sprouty-birth-chat:latest
     container_name: birth_chat_bot
     environment:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
