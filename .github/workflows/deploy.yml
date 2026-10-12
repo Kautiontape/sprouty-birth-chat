@@ -7,7 +7,15 @@ on:
 jobs:
   deploy:
     runs-on: [self-hosted, ktn]
+    permissions:
+      contents: read
+      packages: read
     steps:
+      # Log in fresh: the runner's Docker config may hold another job's
+      # revoked token, and ghcr then answers "denied" even for public images.
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
       - name: Write secrets to .env
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -26,3 +34,10 @@ jobs:
           git pull origin main
           docker compose build
           docker compose up -d
+
+      # Every ktn deploy logs in with its job token, which is revoked when the
+      # job ends; leaving it in the runner's Docker config makes the next job's
+      # ghcr pulls fail with "denied".
+      - name: Log out of GHCR
+        if: always()
+        run: docker logout ghcr.io
